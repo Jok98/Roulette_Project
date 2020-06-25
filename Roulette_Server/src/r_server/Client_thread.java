@@ -1,47 +1,69 @@
-package r_client;
+package r_server;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
-public class Client_thread extends Thread {
-	static Registry registry;
+public class Client_thread extends Thread  {
+	
 	static Random rnd = new Random();
 	static int n_bet;
 	static Integer id;
 	private static ArrayList<Integer> bet_list = new ArrayList<Integer>();
 	private static ArrayList<String> obj_bet_list = new ArrayList<String>();
 	static int budget;
+	static String host;
+	static Boolean start_bet;
+	static Semaphore sem = new Semaphore(1);
 	
-	public Client_thread(Integer id, int budget) {
+	public Client_thread(Integer id, int budget, String host) {
+		this.host = host;
 		this.budget = budget;
 		this.id = id;
 		//start();
 	}
 	
 	public void run() {
-		System.out.println(id + "ha tot budget : "+budget);
-		while(budget>0) {
-		n_bet = (budget<=5) ? budget : rnd.nextInt(5);
-		obj_bet();
-		do_bet();
-		
 		try {
-			registry = LocateRegistry.getRegistry(1077);
+			Registry registry = LocateRegistry.getRegistry(host);
 			Server_Client_int s_c = (Server_Client_int)	registry.lookup("SC");
-			s_c.add_bet(id, bet_list);
-		} catch (RemoteException | NotBoundException e) {
+			Client_thread c_thread = new Client_thread(id, budget, host);
+			
+			while(true) {
+				
+			while(s_c.access()==false){
+				
+				System.out.println("Aste chiuse, aspettare");
+				Thread.sleep(100);
+			}
+			System.out.println("Nuovo turno");
+			System.out.println(id + "ha tot budget : "+budget);
+			if(budget>0) {
+				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
+				obj_bet();
+				do_bet();
+				s_c.set_obj_bet(id, obj_bet_list);
+				s_c.add_bet(id, bet_list);
+				bet_list.clear();
+				obj_bet_list.clear();
+				
+			}else {
+				break;
+			}
+			synchronized(sem){sem.wait();}
+			
+	}
+	} catch (RemoteException | NotBoundException | InterruptedException e) {
 			
 			e.printStackTrace();
 		}
-		
-		
-		
-		
-	}
+	System.out.println("Giocatore "+id+"esce");
+	interrupt();
 	}
 	
 	public void obj_bet(){
@@ -96,6 +118,8 @@ public class Client_thread extends Thread {
 		}
 		System.out.println("---------------------------------------------");
 	}
+
+	
 	
 	
 }

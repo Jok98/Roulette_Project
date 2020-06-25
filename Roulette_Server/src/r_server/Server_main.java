@@ -1,4 +1,6 @@
 package r_server;
+import java.io.IOError;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -6,20 +8,56 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Server_main implements Server_Client_int {
-	static Registry registry;
-	static HashMap<Integer,ArrayList<Integer>> bet_map = new HashMap<Integer,ArrayList<Integer>>();
-	static HashMap<Integer,ArrayList<String>> obj_bet_map = new HashMap<Integer,ArrayList<String>>();
-	public static void main (String[] args) throws RemoteException {
-		
-		registry = LocateRegistry.createRegistry(1077);
-		Server_main s_m = new Server_main();
-		Server_Client_int s_c = (Server_Client_int) UnicastRemoteObject.exportObject(s_m, 1077);
-		registry.rebind("SC", s_c);
-		
+public class Server_main extends UnicastRemoteObject  implements Server_Client_int {
+	private static final long serialVersionUID = 1L;
+	static Boolean accesso;
+	protected Server_main() throws RemoteException {
+		super();
 		
 	}
 
+	static Registry registry;
+	static HashMap<Integer,ArrayList<Integer>> bet_map = new HashMap<Integer,ArrayList<Integer>>();
+	static HashMap<Integer,ArrayList<String>> obj_bet_map = new HashMap<Integer,ArrayList<String>>();
+	
+	public static void main (String[] args) throws RemoteException, NotBoundException {
+		
+		registry= LocateRegistry.createRegistry(1099);
+		Server_main s_m = new Server_main();
+		registry.rebind("SC", s_m);
+		
+		
+		
+		while(true) {
+		System.out.println("Nuovo giro di roulotte");
+		//inizio accettazione scommesse
+		System.out.println("Aste aperte, si accettano le puntate");
+		accesso = true;
+		
+		try {
+			Thread.sleep(5000);
+		}
+		catch(InterruptedException e) {
+			
+		}
+		//fine accettazione scommesse
+		accesso = false;
+		System.out.println("Aste chiuse, aspettare il prossimo turno");
+		
+		//inizio estrazione
+		System.out.print(bet_map);
+		//fine estrazione
+		
+		//Thread.sleep(5000);
+		Client_Server_int c_s = (Client_Server_int) registry.lookup("CS");
+		c_s.notify_client();
+		bet_map.clear();
+		obj_bet_map.clear();
+		System.out.println("-----------------------------------------");
+	}
+	}
+	
+	
 	@Override
 	public synchronized void add_bet(Integer id, ArrayList<Integer> bet ) throws RemoteException {
 
@@ -32,5 +70,14 @@ public class Server_main implements Server_Client_int {
 		obj_bet_map.put(id, obj_bet);
 		
 	}
+
+	@Override
+	public Boolean access() throws RemoteException {
+		
+		return accesso;
+	}
+
+
+	
 
 }
