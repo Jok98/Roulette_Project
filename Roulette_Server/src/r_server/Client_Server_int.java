@@ -6,5 +6,6 @@ import java.rmi.RemoteException;
 public interface Client_Server_int extends Remote {
 
 	public void notify_client() throws RemoteException;
+	public void close_bet() throws RemoteException;
 	
 }

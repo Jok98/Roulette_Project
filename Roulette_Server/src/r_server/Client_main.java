@@ -39,4 +39,11 @@ static Registry registry;
 		synchronized(th.sem){th.sem.notifyAll();}
 	}
 
+	@Override
+	public void close_bet() throws RemoteException {
+		System.out.println("Server scommesse chiuso!");
+		System.exit(1);
+		
+	}
+
 }

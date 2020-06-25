@@ -11,7 +11,7 @@ import java.util.concurrent.Semaphore;
 
 public class Client_thread extends Thread  {
 	
-	private static Random rnd = new Random();
+	private Random rnd = new Random();
 	private int n_bet;
 	private int id;
 
