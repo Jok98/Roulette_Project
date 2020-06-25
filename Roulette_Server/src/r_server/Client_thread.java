@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
-public class Client_thread extends Thread  {
+public class Client_thread extends Thread implements Client_Server_int {
 	
 	private Random rnd = new Random();
 	private int n_bet;
 	private int id;
-
+	static Server_Client_int s_c;
 	private int budget;
 	private static String host;
 	static Semaphore sem = new Semaphore(1);
@@ -29,11 +29,15 @@ public class Client_thread extends Thread  {
 	public  void run() {
 		
 		try {
-			
-			Registry registry = LocateRegistry.getRegistry(host);
-			Server_Client_int s_c = (Server_Client_int)	registry.lookup("SC");
+			Registry registry = LocateRegistry.getRegistry();
+			Client_thread th = new Client_thread(id,host, budget);
+			Client_Server_int c_s = (Client_Server_int) UnicastRemoteObject.exportObject(th,1077);
+			registry.rebind("CS", c_s);
+			registry = LocateRegistry.getRegistry(host);
+			 s_c = (Server_Client_int)	registry.lookup("SC");
 			Client_thread c_thread = new Client_thread(id,  host, budget);
-	
+			s_c.set_user(id, budget);
+			
 			while(true) {
 
 			while(s_c.access()==false){
@@ -43,6 +47,7 @@ public class Client_thread extends Thread  {
 			}
 			ArrayList<Integer> bet_list = new ArrayList<Integer>();
 			ArrayList<String> obj_bet_list = new ArrayList<String>();
+			budget = s_c.get_budget(id);
 			System.out.println("Nuovo turno di : "+id);
 			System.out.println(id + " ha tot budget : "+budget);
 			if(budget>0) {
@@ -103,7 +108,7 @@ public class Client_thread extends Thread  {
 	}
 	
 	
-	public synchronized void do_bet(ArrayList<Integer> bet_list){
+	public synchronized void do_bet(ArrayList<Integer> bet_list) throws RemoteException{
 		int bet_val;
 		
 		
@@ -113,7 +118,10 @@ public class Client_thread extends Thread  {
 			}while(bet_val==0);
 			
 			bet_list.add(bet_val);
-			synchronized(this) {budget = budget-bet_val;}
+			synchronized(this) {
+				budget = budget-bet_val;
+				s_c.update_budget(id, budget);
+			}
 			
 			if(budget<1) {/*
 				System.out.print("Scommessa : "+i+" effettuata !");
@@ -130,6 +138,17 @@ public class Client_thread extends Thread  {
 			}
 		
 	
+	}
+	@Override
+	public void notify_client() throws RemoteException {
+		synchronized(sem){sem.notifyAll();}
+	}
+
+	@Override
+	public void close_bet() throws RemoteException {
+		System.out.println("Server scommesse chiuso!");
+		System.exit(1);
+		
 	}
 
 	

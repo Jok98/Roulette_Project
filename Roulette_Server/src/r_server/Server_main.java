@@ -13,6 +13,8 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 	private static final long serialVersionUID = 1L;
 	static Boolean accesso;
 	static int turn;
+	//possibile causa errore
+	static int budget;
 	static Client_Server_int c_s;
 	protected Server_main() throws RemoteException {
 		super();
@@ -22,7 +24,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 	static Registry registry;
 	static HashMap<Integer,ArrayList<Integer>> bet_map = new HashMap<Integer,ArrayList<Integer>>();
 	static HashMap<Integer,ArrayList<String>> obj_bet_map = new HashMap<Integer,ArrayList<String>>();
-	
+	static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
 	public static void main (String[] args) throws RemoteException, NotBoundException {
 		
 		registry= LocateRegistry.createRegistry(1099);
@@ -44,17 +46,22 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		catch(InterruptedException e) {
 			
 		}
+		c_s = (Client_Server_int) registry.lookup("CS");
 		//fine accettazione scommesse
 		accesso = false;
 		System.out.println("Aste chiuse, aspettare il prossimo turno");
 		
 		//inizio estrazione
+		
 		System.out.println("Valore puntate : " + bet_map);
 		System.out.println("Numeri puntati : " +obj_bet_map);
+		System.out.println("Utenti : "+client_list);
 		//fine estrazione
 		
 		//Thread.sleep(5000);
-		c_s = (Client_Server_int) registry.lookup("CS");
+		budget = client_list.get(0);
+		client_list.put(0, budget+50);
+		System.out.println("Utenti budget aggiornato : "+client_list);
 		c_s.notify_client();
 		bet_map.clear();
 		obj_bet_map.clear();
@@ -86,6 +93,27 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 	public Boolean access() throws RemoteException {
 		
 		return accesso;
+	}
+
+
+	@Override
+	public void set_user(int id, int budget) throws RemoteException {
+		client_list.put(id, budget);
+		
+	}
+
+
+	@Override
+	public int get_budget(int id) throws RemoteException {
+		int budget = client_list.get(id);
+		return budget;
+	}
+
+
+	@Override
+	public void update_budget(int id, int budget) throws RemoteException {
+		client_list.put(id, budget);
+		
 	}
 
 
