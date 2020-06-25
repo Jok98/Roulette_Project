@@ -9,14 +9,17 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 public class Server_main extends UnicastRemoteObject  implements Server_Client_int {
 	private static final long serialVersionUID = 1L;
 	static Boolean accesso;
 	static int turn;
+	static int balance;
 	//possibile causa errore
 	static int budget;
 	static Client_Server_int c_s;
+	static Semaphore sem = new Semaphore(1);
 	protected Server_main() throws RemoteException {
 		super();
 		
@@ -67,28 +70,40 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		String pd = (tmp%2==0)?"par":"disp";
 		String estr = Integer.toString(tmp);
 		for(int i = 0; i<obj_bet_map.size();i++) {
+			balance = 0;
+			int reward = 0;
+			int lost = 0;
+			int bet = 0;
 			try{
 				
 			
 			if((obj_bet_map.get(i).contains(estr))) {
 				budget = client_list.get(i);
-				int bet = bet_map.get(i).indexOf(estr);
-				int reward = bet*2;
+				bet = bet_map.get(i).indexOf(estr);
+				reward = bet*2;
 				client_list.put(i, budget+(reward));
 				System.out.println(i + " ha vinto : "+ (bet*2));
 				
 			}
 			if((!obj_bet_map.get(i).contains(0))&&(obj_bet_map.get(i).contains(pd))) {
 				budget = client_list.get(i);
-				int bet = bet_map.get(i).get(0);
-				int reward = bet*2;
+				bet = bet_map.get(i).get(0);
+				reward = bet*2;
 				client_list.put(i, budget+(reward));
 				System.out.println(i + " ha vinto : "+ (reward));
 				
 			}
-
+			for(int j = 0; j<bet_map.get(i).size();j++) {
+				int x = bet_map.get(i).get(j);
+				System.out.println(x);
+				lost = lost + x;
+				
+			}
 			
-			}catch(NullPointerException e) {
+			balance = create_balance(reward, lost, bet);
+			System.out.println(i+" bilancio " +balance);
+			synchronized(sem){sem.wait();	}
+			}catch(NullPointerException | InterruptedException  e) {
 				//System.err.println("id : "+i+" non esistente");
 			}
 			
@@ -97,6 +112,12 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		
 		//fine estrazione
 		System.out.println("Utenti budget aggiornato : "+client_list);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			
+			e.printStackTrace();
+		}
 		c_s.notify_client();
 		bet_map.clear();
 		obj_bet_map.clear();
@@ -110,6 +131,11 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		*/
 	}
 	
+	public static int create_balance(int reward, int lost, int bet) {
+		
+		return reward-lost+bet;
+		
+	} 
 	
 	@Override
 	public synchronized void add_bet(Integer id, ArrayList<Integer> bet ) throws RemoteException {
@@ -150,12 +176,18 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		client_list.put(id, budget);
 		
 	}
-
+	
 
 	@Override
-	public void show_balance(int id) throws RemoteException {
+	public int show_balance() throws RemoteException {
 		
+		return balance;
 		
+	}
+	
+	@Override
+	public void notify_server() throws RemoteException {
+		synchronized(sem){sem.notifyAll();}
 	}
 
 

@@ -14,10 +14,13 @@ public class Client_thread extends Thread implements Client_Server_int {
 	private Random rnd = new Random();
 	private int n_bet;
 	private int id;
-	static Server_Client_int s_c;
+	private Server_Client_int s_c;
 	private int budget;
+	private int balance = 0;
 	private static String host;
+	private String tmp;
 	static Semaphore sem = new Semaphore(1);
+	private Semaphore semex = new Semaphore(1);
 	
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
@@ -26,7 +29,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 		
 	}
 	
-	public  void run() {
+	public synchronized void run() {
 		
 		try {
 			Registry registry = LocateRegistry.getRegistry();
@@ -53,9 +56,9 @@ public class Client_thread extends Thread implements Client_Server_int {
 			if(budget>0) {
 				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
 			
-				synchronized(this) {
+				synchronized(semex) {
+					semex.acquire();
 					obj_bet(obj_bet_list);
-					
 					s_c.set_obj_bet(id, obj_bet_list);
 					do_bet(bet_list);
 					s_c.add_bet(id, bet_list);
@@ -63,13 +66,17 @@ public class Client_thread extends Thread implements Client_Server_int {
 					System.out.println("Lista obj puntate di "+ id + " "+obj_bet_list);
 					bet_list.clear();
 					obj_bet_list.clear();
+					semex.release();
 				}
 				
 				
 			}else {
 				break;
 			}
-			synchronized(sem){sem.wait();}
+			this.balance = s_c.show_balance();
+			System.out.println(balance);
+			Thread.sleep(1000);
+			synchronized(sem){sem.wait();	}
 			System.out.println("---------------------------------------------");
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException e) {
@@ -150,6 +157,8 @@ public class Client_thread extends Thread implements Client_Server_int {
 		System.exit(1);
 		
 	}
+
+
 
 	
 	
