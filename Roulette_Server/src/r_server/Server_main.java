@@ -72,20 +72,20 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 			
 			if((obj_bet_map.get(i).contains(estr))) {
 				budget = client_list.get(i);
-				int bet = obj_bet_map.get(i).indexOf(estr);
+				int bet = bet_map.get(i).indexOf(estr);
 				client_list.put(i, budget+(bet*2));
-				System.out.println(i + " ha vinto : "+ (budget+(bet*2)));
+				System.out.println(i + " ha vinto : "+ (bet*2));
 				
 			}
 			if((!obj_bet_map.get(i).contains(0))&&(obj_bet_map.get(i).contains(pd))) {
 				budget = client_list.get(i);
 				int bet = bet_map.get(i).get(0);
 				client_list.put(i, budget+(bet*2));
-				System.out.println(i + " ha vinto : "+ (budget+(bet*2)));
+				System.out.println(i + " ha vinto : "+ (bet*2));
 				
 			}
 			}catch(NullPointerException e) {
-				System.err.println("id : "+i+" non esistente");
+				//System.err.println("id : "+i+" non esistente");
 			}
 			
 		}

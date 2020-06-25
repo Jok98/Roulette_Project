@@ -21,8 +21,8 @@ static Registry registry;
 		/*Client_main c_s = new Client_main();
 		registry = LocateRegistry.getRegistry();
 		registry.rebind("CS", c_s);*/
-		Client_thread th[] = new Client_thread[3];
-        for(int i=0; i<2; i++){
+		Client_thread th[] = new Client_thread[7];
+        for(int i=0; i<6; i++){
         	th[i] = new Client_thread(i, host, 50);
         	th[i].start();
         }
