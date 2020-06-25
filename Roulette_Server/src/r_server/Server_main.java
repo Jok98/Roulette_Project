@@ -86,6 +86,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 				System.out.println(i + " ha vinto : "+ (reward));
 				
 			}
+
 			
 			}catch(NullPointerException e) {
 				//System.err.println("id : "+i+" non esistente");
