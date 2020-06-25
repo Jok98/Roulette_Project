@@ -53,7 +53,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 			if(budget>0) {
 				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
 			
-				synchronized(s_c) {
+				synchronized(this) {
 					obj_bet(obj_bet_list);
 					
 					s_c.set_obj_bet(id, obj_bet_list);
