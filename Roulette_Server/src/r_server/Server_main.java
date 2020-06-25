@@ -45,7 +45,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		System.out.println("Aste chiuse, aspettare il prossimo turno");
 		
 		//inizio estrazione
-		System.out.print(bet_map);
+		System.out.println(bet_map);
 		//fine estrazione
 		
 		//Thread.sleep(5000);

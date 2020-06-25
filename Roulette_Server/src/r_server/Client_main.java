@@ -15,16 +15,22 @@ public class Client_main extends UnicastRemoteObject implements Client_Server_in
 	}
 
 static Registry registry;
-	public static void main (String[] args) throws RemoteException, NotBoundException {
+	public static void main (String[] args) throws RemoteException, NotBoundException, InterruptedException {
 		String host = (args.length < 1) ? null : args[0];
-		Client_thread th= 	new Client_thread(1,50,host);
+		
 		Client_main c_s = new Client_main();
 		registry = LocateRegistry.getRegistry();
 		registry.rebind("CS", c_s);
-		
-
-		th.start();
-		
+		Client_thread th[] = new Client_thread[3];
+        for(int i=0; i<2; i++){
+        	th[i] = new Client_thread(i, host, 50);
+        	th[i].start();
+        }
+        /*
+        for(int i=0; i<2; i++){
+        	th[i].join();;
+           
+        }*/
 		
 	}
 	
