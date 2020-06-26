@@ -87,7 +87,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 				}
 				
 				synchronized(turn_sem){
-					System.out.println("Aste chiuse, aspettare");
+					System.out.println("Aste chiuse "+id +" deve aspettare");
 					turn_sem.wait();
 					}
 	}

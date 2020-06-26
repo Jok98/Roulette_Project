@@ -49,26 +49,15 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         System.out.println("Nuovo giro di roulotte, turno : "+turn);
         //inizio accettazione scommesse
         System.out.println("Aste aperte, si accettano le puntate");
-        
-        
-        try {
-        	System.out.println("In attesa di giocatori...");
-        	accesso = true;
-        	Thread.sleep(10000);
-        	accesso = false;
-        }
-        catch(InterruptedException e) {}
-        /*
-        if((obj_bet_map.isEmpty())||(bet_map.isEmpty())) {
-         	turn_void++;
-         	if(turn_void<6) {
-         	
-         	}else {System.out.println("Chiusura sever, nessun giocatore presente");System.exit(1);;}
-         	}
-       */
+       
+        System.out.println("In attesa di giocatori...");
+        accesso = true;
+        Thread.sleep(10000);
+        accesso = false;
+
         //fine accettazione scommesse
         c_s = (Client_Server_int) registry.lookup("CS");
-        c_s.give_access();
+        //c_s.give_access();
         System.out.println("Aste chiuse, aspettare il prossimo turno");
         System.out.println("Valore puntate : " + bet_map);
         System.out.println("Numeri puntati : " +obj_bet_map);
