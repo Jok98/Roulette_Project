@@ -12,4 +12,5 @@ public interface Server_Client_int extends Remote{
 	public void set_user(int id, int budget)throws RemoteException;
 	public int get_budget(int id)throws RemoteException;
 	public void update_budget(int id ,int budget)throws RemoteException;
+	
 }

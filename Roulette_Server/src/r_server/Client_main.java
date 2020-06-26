@@ -31,7 +31,8 @@ static Registry registry;
         for(int i=0; i<2; i++){
         	th[i].join();;
            
-        }*/
+        }
+        */
 		
 	}
 	

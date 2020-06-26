@@ -25,8 +25,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
 		this.budget = budget;
-		this.id = id; 
-		
+		this.id = id;
 	}
 	
 	public synchronized void run() {

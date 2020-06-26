@@ -104,10 +104,9 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 				lost = lost + x;
 				
 			}
-			
+
 			balance = create_balance(reward, lost, bet);
 			System.out.println(i+" bilancio " +balance);
-			
 			
 			
 		}
