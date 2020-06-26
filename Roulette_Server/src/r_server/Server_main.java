@@ -32,9 +32,12 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
     static HashMap<Integer,ArrayList<String>> obj_bet_map = new HashMap<Integer,ArrayList<String>>();
     static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
     static HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
+    static HashMap<Integer,Integer>client_turn = new HashMap<Integer,Integer>();
     static  int turn = 0;
     public static void main (String[] args) throws RemoteException, NotBoundException, InterruptedException {
         
+    	for(int m = 0; m<10;m++) {client_turn.put(m, 0);}
+    	
         registry= LocateRegistry.createRegistry(1099);
         Server_main s_m = new Server_main();
         registry.rebind("SC", s_m);
@@ -123,12 +126,19 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                 lost = lost + x;
                 
             }
+            coun_exit();
+           /* for(int y = 0; y<10;y++) {
+            	if(client_turn.get(y) >=5) {
+            		
+            	}
+
+            }*/
             //visualizza su server
             balance = create_balance(reward, lost, bet);
             //invia a client
             balance_list.put(i,create_balance(reward, lost, bet)) ;
             System.out.println(i+" bilancio " +balance);
-        
+            System.err.println(obj_bet_map.keySet().toString());
             } //else {System.out.println("Saltato indice : "+ i);}
             
             
@@ -156,7 +166,19 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         
         return reward-lost+bet;
         
-    } 
+    }
+    
+    public static void coun_exit() {
+		String[] user = (String[]) obj_bet_map.keySet().toArray();
+		for(int i = 0; i<user.length;i++) {
+			if(!user[i].equals(i)) {
+				int  old_count = client_turn.get(i);
+				client_turn.put(i, old_count+1);
+			}
+			
+		}	
+    	
+    }
     
     @Override
     public synchronized void add_bet(Integer id, ArrayList<Integer> bet ) throws RemoteException {
@@ -166,8 +188,8 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         bet_map.put(id, bet);
         
     }
+    
 
- 
 
     @Override
     public void set_obj_bet(Integer id, ArrayList<String> obj_bet) throws RemoteException {
@@ -232,9 +254,11 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 
 	@Override
 	public int get_turn() throws RemoteException {
-		
+	
 		return turn;
 	}
+	
+	
     
 
 
