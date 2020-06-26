@@ -13,6 +13,7 @@ import java.util.concurrent.Semaphore;
 public class Client_thread extends Thread implements Client_Server_int {
 	
 	private Random rnd = new Random();
+	private int turn = 0;
 	private int n_bet;
 	private int id;
 	private Server_Client_int s_c;
@@ -31,6 +32,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	public synchronized void run() {
 		
 		try {
+			
 			Registry registry = LocateRegistry.getRegistry();
 			Client_thread th = new Client_thread(id,host, budget);
 			Client_Server_int c_s = (Client_Server_int) UnicastRemoteObject.exportObject(th,1077);
@@ -41,12 +43,11 @@ public class Client_thread extends Thread implements Client_Server_int {
 			s_c.set_user(id, budget);
 			
 			while(true) {
-
-			while(s_c.access()==false){
-				
-				System.out.println("Aste chiuse, aspettare");
-				Thread.sleep(100);
-			}
+				turn ++;
+				Boolean join = rnd.nextBoolean();
+				if(join==true) {
+					System.out.println(id+" vuole partecipare al turno : "+turn);
+			
 			ArrayList<Integer> bet_list = new ArrayList<Integer>();
 			ArrayList<String> obj_bet_list = new ArrayList<String>();
 			budget = s_c.get_budget(id);
@@ -78,16 +79,21 @@ public class Client_thread extends Thread implements Client_Server_int {
 			
 			
 			synchronized(sem){
-				//s_c.show_balance();
 				balance_list =s_c.show_balance();
-				System.out.println("Bilancio di "+id+" è : "+balance_list.get(id));
-				//System.out.println("Il bilancio di "+id+" è : "+balance);
+				System.out.println("Bilancio di "+id+" e : "+balance_list.get(id)+" al turno " +turn );
 				sem.wait();
-				System.out.println("---------------------------------------------");}
-			
-			
-			
-			
+				System.out.println("---------------------------------------------");
+				}
+			}else {
+				System.out.println(id + " non partecipa al turno");
+				
+				while(s_c.access()==false){
+					
+					System.out.println("Aste chiuse, aspettare");
+					Thread.sleep(100);
+				}
+				
+			}
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException e) {
 			
@@ -95,7 +101,10 @@ public class Client_thread extends Thread implements Client_Server_int {
 		}
 	System.out.println("Giocatore "+id+" esce");
 	interrupt();
+
 	}
+	
+	
 	
 	public synchronized void obj_bet(ArrayList<String> obj_bet_list){
 		Boolean num = rnd.nextBoolean();
@@ -127,8 +136,6 @@ public class Client_thread extends Thread implements Client_Server_int {
 	
 	public synchronized void do_bet(ArrayList<Integer> bet_list) throws RemoteException{
 		int bet_val;
-		
-		
 		for(int i = 0; i<n_bet;i++) {
 			do {
 				bet_val = ((budget==1)||(budget==0)) ? 1 : rnd.nextInt(budget);
@@ -148,7 +155,6 @@ public class Client_thread extends Thread implements Client_Server_int {
 				break;
 			}
 			/*
-			System.out.print("Scommessa : "+i+" effettuata !");
 			System.out.println(" valore : "+bet_val);
 			System.out.println("Soldi rimanenti :  "+ budget);
 			*/
@@ -160,7 +166,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	public void notify_client() throws RemoteException {
 		synchronized(sem){sem.notifyAll();}
 	}
-
+	//da vedere se utilizzato
 	@Override
 	public void close_bet() throws RemoteException {
 		System.out.println("Server scommesse chiuso!");
