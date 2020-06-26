@@ -138,20 +138,21 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
             
             
         }
-      
+        try {
+            c_s = (Client_Server_int) registry.lookup("CS");
+            c_s.notify_client();
+            c_s.give_access();
+            }catch(NotBoundException e) {
+
+            	Thread.sleep(1000);
+            }
         
         //fine estrazione
         System.out.println("Utenti budget aggiornato : "+client_list);
-
-        try {
-        c_s = (Client_Server_int) registry.lookup("CS");
-        c_s.notify_client();
-        }catch(NotBoundException e) {
-
-        	Thread.sleep(1000);
-        }
-
         System.out.println("-----------------------------------------");
+        
+       
+        
     }while((!bet_map.isEmpty())&&(!obj_bet_map.isEmpty()));
         
         System.out.println("Server chiuso");

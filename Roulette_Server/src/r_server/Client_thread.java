@@ -21,6 +21,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	private static String host;
 	static Semaphore sem = new Semaphore(1);
 	private Semaphore semex = new Semaphore(1);
+	private Semaphore turn_sem = new Semaphore(1);
 	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
@@ -87,10 +88,14 @@ public class Client_thread extends Thread implements Client_Server_int {
 			}else {
 				System.out.println(id + " non partecipa al turno");
 				
-				while(s_c.access()==false){
+				{
 					
 					System.out.println("Aste chiuse, aspettare");
-					Thread.sleep(100);
+					synchronized(turn_sem) {
+						while(s_c.access()==false);{
+					
+							turn_sem.wait();
+					}}
 				}
 				
 			}
@@ -164,13 +169,19 @@ public class Client_thread extends Thread implements Client_Server_int {
 	}
 	@Override
 	public void notify_client() throws RemoteException {
-		synchronized(sem){sem.notifyAll();}
+		synchronized(sem){sem.notify();}
 	}
 	//da vedere se utilizzato
 	@Override
 	public void close_bet() throws RemoteException {
 		System.out.println("Server scommesse chiuso!");
 		System.exit(1);
+		
+	}
+
+	@Override
+	public void give_access() throws RemoteException {
+		synchronized(turn_sem){turn_sem.notify();}
 		
 	}
 
