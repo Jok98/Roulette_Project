@@ -22,6 +22,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	static Semaphore sem = new Semaphore(1);
 	private Semaphore semex = new Semaphore(1);
 	static Semaphore turn_sem = new Semaphore(1);
+	static Semaphore tot_sem = new Semaphore(1);
 	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
 	static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
 	public Client_thread(int id, String host, int budget) {
@@ -45,6 +46,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 			s_c.set_user(id, budget);
 			
 			while(true) {
+				
 				turn ++;
 				Boolean join = rnd.nextBoolean();
 				if(join==true) {
@@ -58,7 +60,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 			
 			if(budget>0) {
 				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
-			
+				tot_sem.acquire();
 				synchronized(semex) {
 					semex.acquire();
 					obj_bet(obj_bet_list);
@@ -67,13 +69,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 					
 					if(obj_bet_list.isEmpty()==false) {
 						//obj_bet_list.set(0, "ehi");bet_list.set(0, 99);
-					
-					
-						
-					
-						
-						
-					
+
 					s_c.set_obj_bet(id, obj_bet_list);
 					s_c.add_bet(id, bet_list);
 					System.out.println("Lista valori puntate di "+ id + " "+bet_list
@@ -82,9 +78,9 @@ public class Client_thread extends Thread implements Client_Server_int {
 					obj_bet_list.clear();
 					budget = s_c.get_budget(id);
 					semex.release();
-					}else {System.err.println("Rimosssa puntata non valida di "+id);}
+					}else {System.err.println("Rimosssa puntata non valida di "+id+ "turno : "+turn);}
 				}
-				
+				tot_sem.release();
 				
 			}else break;
 
