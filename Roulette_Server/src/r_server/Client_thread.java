@@ -28,6 +28,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 		this.id = id;
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public synchronized void run() {
 		
 		try {
@@ -60,11 +61,13 @@ public class Client_thread extends Thread implements Client_Server_int {
 				synchronized(semex) {
 					semex.acquire();
 					obj_bet(obj_bet_list);
+					//if(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size());}
 					s_c.set_obj_bet(id, obj_bet_list);
 					do_bet(bet_list);
+					while(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size()-1);}
 					s_c.add_bet(id, bet_list);
 					System.out.println("Lista valori puntate di "+ id + " "+bet_list);
-					System.out.println("Lista obj puntate di "+ id + " "+obj_bet_list);
+					System.err.println("Lista obj puntate di "+ id + " "+obj_bet_list);
 					bet_list.clear();
 					obj_bet_list.clear();
 					budget = s_c.get_budget(id);
@@ -79,12 +82,13 @@ public class Client_thread extends Thread implements Client_Server_int {
 			
 			synchronized(sem){
 				int balance =budget - old_budget;
-				System.err.println("Il bilancio di "+id+" è : "+balance);
-				sem.wait();	}
+				System.out.println("Il bilancio di "+id+" è : "+balance);
+				sem.wait();
+				System.out.println("---------------------------------------------");}
 			
 			
 			
-			System.out.println("---------------------------------------------");
+			
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException e) {
 			
@@ -118,6 +122,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 				obj_bet_list.add(obj_bet);
 				//System.out.println("Si scomette su : " + obj_bet );
 			}
+			System.err.println("Obj puntate di "+ id + " "+obj_bet_list);
 
 	}
 	
