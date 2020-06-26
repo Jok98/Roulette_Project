@@ -1,6 +1,5 @@
 package r_server;
 
-import java.io.IOError;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.UnmarshalException;
@@ -42,6 +41,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         int turn = 0;
         int turn_void = 0;
         do {
+        turn++;
         bet_map.clear();
         obj_bet_map.clear();
         System.out.println("Nuovo giro di roulotte, turno : "+turn);
@@ -99,7 +99,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                     bet = bet_map.get(i).get(ind);
                     reward = bet*2;
                     client_list.put(i, budget+(reward));
-                    System.err.println(i + " ha vinto : "+ (bet*2));
+                    System.err.println("giocatore "+i + " ha vinto : "+ (reward)+" turno "+turn);
                 }
                 
             }
@@ -108,7 +108,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                 bet = bet_map.get(i).get(0);
                 reward = bet*2;
                 client_list.put(i, budget+(reward));
-                System.err.println(i + " ha vinto : "+ (reward));
+                System.err.println("giocatore "+i + " ha vinto : "+ (reward)+" turno "+turn);
                 
             }
             for(int j = 0; j<bet_map.get(i).size();j++) {
