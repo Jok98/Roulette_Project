@@ -64,6 +64,16 @@ public class Client_thread extends Thread implements Client_Server_int {
 					obj_bet(obj_bet_list);
 					do_bet(bet_list);
 					while(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size()-1);}
+					
+					if(obj_bet_list.isEmpty()==false) {
+						//obj_bet_list.set(0, "ehi");bet_list.set(0, 99);
+					
+					
+						
+					
+						
+						
+					
 					s_c.set_obj_bet(id, obj_bet_list);
 					s_c.add_bet(id, bet_list);
 					System.out.println("Lista valori puntate di "+ id + " "+bet_list
@@ -72,6 +82,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 					obj_bet_list.clear();
 					budget = s_c.get_budget(id);
 					semex.release();
+					}else {System.err.println("Rimosssa puntata non valida di "+id);}
 				}
 				
 				
@@ -83,14 +94,14 @@ public class Client_thread extends Thread implements Client_Server_int {
 				sem.wait();
 				System.out.println("---------------------------------------------");
 				}
-			}else {
-				System.out.println(id + " non partecipa al turno");
-				}
+			}else {System.out.println(id + " non partecipa al turno");}
 				
-				synchronized(turn_sem){
-					System.out.println("Aste chiuse "+id +" deve aspettare");
-					turn_sem.wait();
-					}
+			synchronized(turn_sem){
+				System.out.println("Aste chiuse "+id +" deve aspettare");
+				turn_sem.wait();
+			}
+				
+				
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException e) {
 			

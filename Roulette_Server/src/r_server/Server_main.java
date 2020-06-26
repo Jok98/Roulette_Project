@@ -43,9 +43,11 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         int turn_void = 0;
         do {
         turn++;
+        
         obj_bet_map.clear();
         bet_map.clear();
-       
+        Thread.sleep(100);
+        
         System.out.println("Nuovo giro di roulotte, turno : "+turn);
         //inizio accettazione scommesse
         System.out.println("Aste aperte, si accettano le puntate");
