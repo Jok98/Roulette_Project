@@ -25,6 +25,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	static Semaphore tot_sem = new Semaphore(1);
 	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
 	static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
+	
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
 		this.budget = budget;
@@ -46,8 +47,8 @@ public class Client_thread extends Thread implements Client_Server_int {
 			s_c.set_user(id, budget);
 			
 			while(true) {
+				turn = s_c.get_turn();
 				
-				turn ++;
 				Boolean join = rnd.nextBoolean();
 				if(join==true) {
 
@@ -63,13 +64,12 @@ public class Client_thread extends Thread implements Client_Server_int {
 				tot_sem.acquire();
 				synchronized(semex) {
 					semex.acquire();
+					
+					do {
 					obj_bet(obj_bet_list);
 					do_bet(bet_list);
 					while(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size()-1);}
-					
-					if(obj_bet_list.isEmpty()==false) {
-						//obj_bet_list.set(0, "ehi");bet_list.set(0, 99);
-
+					}while(obj_bet_list.isEmpty()==true);
 					s_c.set_obj_bet(id, obj_bet_list);
 					s_c.add_bet(id, bet_list);
 					System.out.println("Lista valori puntate di "+ id + " "+bet_list
@@ -78,7 +78,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 					obj_bet_list.clear();
 					budget = s_c.get_budget(id);
 					semex.release();
-					}else {System.err.println("Rimosssa puntata non valida di "+id+ "turno : "+turn);}
+					
 				}
 				tot_sem.release();
 				
@@ -90,7 +90,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 				sem.wait();
 				System.out.println("---------------------------------------------");
 				}
-			}else {System.out.println(id + " non partecipa al turno");}
+			}else {System.out.println(id + " non partecipa al turno "+ turn);}
 				
 			synchronized(turn_sem){
 				System.out.println("Aste chiuse "+id +" deve aspettare");
@@ -103,7 +103,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 			
 			e.printStackTrace();
 		}
-	System.out.println("Giocatore "+id+" esce");
+	System.err.println("Giocatore "+id+" esce");
 	interrupt();
 
 	}

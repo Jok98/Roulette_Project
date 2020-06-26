@@ -32,6 +32,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
     static HashMap<Integer,ArrayList<String>> obj_bet_map = new HashMap<Integer,ArrayList<String>>();
     static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
     static HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
+    static  int turn = 0;
     public static void main (String[] args) throws RemoteException, NotBoundException, InterruptedException {
         
         registry= LocateRegistry.createRegistry(1099);
@@ -39,7 +40,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         registry.rebind("SC", s_m);
         
        
-        int turn = 0;
+       
         int turn_void = 0;
         do {
         turn++;
@@ -227,6 +228,12 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 	public HashMap<Integer, Integer> user_join() throws RemoteException {
 		
 		return client_list;
+	}
+
+	@Override
+	public int get_turn() throws RemoteException {
+		
+		return turn;
 	}
     
 
