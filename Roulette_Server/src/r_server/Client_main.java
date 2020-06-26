@@ -27,12 +27,6 @@ static Registry registry;
         	th[i] = new Client_thread(i, host, 50);
         	th[i].start();
         }
-        /*
-        for(int i=0; i<2; i++){
-        	th[i].join();;
-           
-        }
-        */
 		
 	}
 	

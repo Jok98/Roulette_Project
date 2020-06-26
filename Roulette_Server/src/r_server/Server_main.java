@@ -107,8 +107,6 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 
 			balance = create_balance(reward, lost, bet);
 			System.out.println(i+" bilancio " +balance);
-			
-			
 		}
 		
 		
@@ -121,8 +119,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 			e.printStackTrace();
 		}
 		c_s.notify_client();
-		//bet_map.clear();
-		//obj_bet_map.clear();
+
 		System.err.println("-----------------------------------------");
 	}while((!bet_map.isEmpty())&&(!obj_bet_map.isEmpty()));
 		

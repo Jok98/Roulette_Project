@@ -137,11 +137,11 @@ public class Client_thread extends Thread implements Client_Server_int {
 				s_c.update_budget(id, budget);
 			}
 			
-			if(budget<1) {/*
-				System.out.print("Scommessa : "+i+" effettuata !");
-				System.out.println(" valore : "+bet_val);
-				System.out.println("Soldi esauriti ");
-				*/
+			if(budget<1) {
+				/*System.out.print("Scommessa : "+i+" effettuata !");
+				System.out.println(" valore : "+bet_val);*/
+				System.out.println(id + " non ha piu soldi ");
+				
 				break;
 			}
 			/*
