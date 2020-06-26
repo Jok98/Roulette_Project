@@ -61,10 +61,9 @@ public class Client_thread extends Thread implements Client_Server_int {
 				synchronized(semex) {
 					semex.acquire();
 					obj_bet(obj_bet_list);
-					//if(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size());}
-					s_c.set_obj_bet(id, obj_bet_list);
 					do_bet(bet_list);
 					while(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size()-1);}
+					s_c.set_obj_bet(id, obj_bet_list);
 					s_c.add_bet(id, bet_list);
 					System.out.println("Lista valori puntate di "+ id + " "+bet_list);
 					System.err.println("Lista obj puntate di "+ id + " "+obj_bet_list);

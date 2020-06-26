@@ -42,8 +42,9 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         int turn_void = 0;
         do {
         turn++;
-        bet_map.clear();
         obj_bet_map.clear();
+        bet_map.clear();
+       
         System.out.println("Nuovo giro di roulotte, turno : "+turn);
         //inizio accettazione scommesse
         System.out.println("Aste aperte, si accettano le puntate");
@@ -73,25 +74,42 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         //Thread.sleep(5000);
         //inizio estrazione
         Random rnd = new Random();
-        int tmp = rnd.nextInt(36);
+        //rnd.nextInt(36)
+        int tmp = 15;
         System.out.println("Estratto il numero : "+tmp);
         String pd = (tmp%2==0)?"par":"dis";
         String estr = Integer.toString(tmp);
         //check_bet();
         for(int i = 0; i<bet_map.size();i++) {
-        	try {
+        	
             balance = 0;
             int reward = 0;
             int lost = 0;
             int bet = 0;
                 
-           
-            while(!(obj_bet_map.containsKey(i))||(obj_bet_map.containsKey(pd))) {
-                i++;
-                if(i>bet_map.size()) break; ;
+     
+            Boolean continua = true;
+            /*in certe estrazioni non viene assegnata la reward
+            do {
+            try {Boolean x = (obj_bet_map.get(i).contains(estr));
+            continua = true;
+            }catch(NullPointerException e) {
+            	continua = false;
+            	i++;
+            }
+            }while(continua == false);
+            */
+            
+            
+            try {Boolean x = (obj_bet_map.get(i).contains(estr));
+            	continua = true;
+            }catch(NullPointerException e) {
+            	continua = false;
             }
             
-
+            
+            if(continua==true) {
+            
             if((obj_bet_map.get(i).contains(estr))) {
                 budget = client_list.get(i);
                 int    ind = obj_bet_map.get(i).indexOf(estr);
@@ -99,7 +117,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                     bet = bet_map.get(i).get(ind);
                     reward = bet*2;
                     client_list.put(i, budget+(reward));
-                    System.err.println("giocatore "+i + " ha vinto : "+ (reward)+" turno "+turn);
+                    System.err.println("giocatore "+i + " ha vinto : "+ (reward)+"|| turno "+turn);
                 }
                 
             }
@@ -108,7 +126,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                 bet = bet_map.get(i).get(0);
                 reward = bet*2;
                 client_list.put(i, budget+(reward));
-                System.err.println("giocatore "+i + " ha vinto : "+ (reward)+" turno "+turn);
+                System.err.println("giocatore "+i + " ha vinto : "+ (reward)+"|| turno "+turn);
                 
             }
             for(int j = 0; j<bet_map.get(i).size();j++) {
@@ -120,11 +138,12 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 
             balance = create_balance(reward, lost, bet);
             System.out.println(i+" bilancio " +balance);
-        }catch(NullPointerException e) {
-        	System.err.println("Riferimento ad "+i+" non trovato");
-        }
-        }
         
+            }/*provare a implementare funzioni tramite else
+            else System.err.println("Saltato indice : "+ i);*/
+            
+        }
+      //System.err.println("Riferimento ad "+i+" non trovato opp  "+obj_bet_map.get(i));
         
         //fine estrazione
         System.out.println("Utenti budget aggiornato : "+client_list);
