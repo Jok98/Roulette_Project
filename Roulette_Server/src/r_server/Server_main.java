@@ -37,7 +37,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         Server_main s_m = new Server_main();
         registry.rebind("SC", s_m);
         
-        
+       
         int turn = 0;
         int turn_void = 0;
         do {
@@ -78,9 +78,9 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         System.out.println("Estratto il numero : "+tmp);
         String pd = (tmp%2==0)?"par":"dis";
         String estr = Integer.toString(tmp);
-
         
-        for(int i = 0; i<bet_map.size();i++) {
+        
+        for(int i = 0; i<10;i++) {
         	
             balance = 0;
             int reward = 0;
@@ -110,10 +110,11 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                     reward = bet*2;
                     client_list.put(i, budget+(reward));
                     System.out.println("giocatore "+i + " ha vinto : "+ (reward)+"|| turno "+turn);
+                    
                 }
                 
             }
-            if((!obj_bet_map.get(i).contains("0"))&&(obj_bet_map.get(i).contains(pd))) {
+            if((obj_bet_map.get(i).contains(pd))) {
                 budget = client_list.get(i);
                 bet = bet_map.get(i).get(0);
                 reward = bet*2;
@@ -131,9 +132,8 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
             balance = create_balance(reward, lost, bet);
             //System.out.println(i+" bilancio " +balance);
         
-            } else System.out.println("Saltato indice : "+ i);
-            /*provare a implementare funzioni tramite else
-            else System.out.println("Saltato indice : "+ i);*/
+            } //else {System.out.println("Saltato indice : "+ i);}
+            
             
         }
       
@@ -225,6 +225,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         System.err.println("Inserito : "+n.get(0));
     	return n;
     }
+    
 
 
 }
