@@ -128,8 +128,9 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                 lost = lost + x;
                 
             }
-
+            //visualizza su server
             balance = create_balance(reward, lost, bet);
+            //invia a client
             balance_list.put(i,create_balance(reward, lost, bet)) ;
             System.out.println(i+" bilancio " +balance);
         

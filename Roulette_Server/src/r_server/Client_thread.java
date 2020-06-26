@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
@@ -16,12 +17,10 @@ public class Client_thread extends Thread implements Client_Server_int {
 	private int id;
 	private Server_Client_int s_c;
 	private int budget;
-	private int old_budget ;
 	private static String host;
-	private String tmp;
 	static Semaphore sem = new Semaphore(1);
 	private Semaphore semex = new Semaphore(1);
-	
+	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
 		this.budget = budget;
@@ -50,11 +49,10 @@ public class Client_thread extends Thread implements Client_Server_int {
 			}
 			ArrayList<Integer> bet_list = new ArrayList<Integer>();
 			ArrayList<String> obj_bet_list = new ArrayList<String>();
-			old_budget = budget;
 			budget = s_c.get_budget(id);
 			
-			System.out.println("Nuovo turno di : "+id);
-			System.out.println(id + " ha tot budget : "+budget);
+			System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
+			
 			if(budget>0) {
 				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
 			
@@ -65,8 +63,8 @@ public class Client_thread extends Thread implements Client_Server_int {
 					while(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size()-1);}
 					s_c.set_obj_bet(id, obj_bet_list);
 					s_c.add_bet(id, bet_list);
-					System.out.println("Lista valori puntate di "+ id + " "+bet_list);
-					System.err.println("Lista obj puntate di "+ id + " "+obj_bet_list);
+					System.out.println("Lista valori puntate di "+ id + " "+bet_list
+							+" || "+"Lista obj puntate di "+ id + " "+obj_bet_list);
 					bet_list.clear();
 					obj_bet_list.clear();
 					budget = s_c.get_budget(id);
@@ -80,9 +78,9 @@ public class Client_thread extends Thread implements Client_Server_int {
 			
 			
 			synchronized(sem){
-				int balance =budget - old_budget;
 				//s_c.show_balance();
-				System.out.println("Bilancio generale : "+s_c.show_balance());
+				balance_list =s_c.show_balance();
+				System.out.println("Bilancio di "+id+" è : "+balance_list.get(id));
 				//System.out.println("Il bilancio di "+id+" è : "+balance);
 				sem.wait();
 				System.out.println("---------------------------------------------");}
@@ -123,7 +121,6 @@ public class Client_thread extends Thread implements Client_Server_int {
 				obj_bet_list.add(obj_bet);
 				//System.out.println("Si scomette su : " + obj_bet );
 			}
-			System.err.println("Obj puntate di "+ id + " "+obj_bet_list);
 
 	}
 	
