@@ -220,6 +220,12 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		
 		return balance_list;
 	}
+
+	@Override
+	public HashMap<Integer, Integer> user_join() throws RemoteException {
+		
+		return client_list;
+	}
     
 
 

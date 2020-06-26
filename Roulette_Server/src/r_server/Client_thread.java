@@ -23,6 +23,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	private Semaphore semex = new Semaphore(1);
 	static Semaphore turn_sem = new Semaphore(1);
 	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
+	static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
 		this.budget = budget;
@@ -47,13 +48,13 @@ public class Client_thread extends Thread implements Client_Server_int {
 				turn ++;
 				Boolean join = rnd.nextBoolean();
 				if(join==true) {
-					System.out.println(id+" vuole partecipare al turno : "+turn);
-			
+
 			ArrayList<Integer> bet_list = new ArrayList<Integer>();
 			ArrayList<String> obj_bet_list = new ArrayList<String>();
 			budget = s_c.get_budget(id);
-			
-			System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
+			client_list = s_c.user_join();
+			System.out.println(id+" e stato accettato all asta "+ turn+ " : "+client_list.containsKey(id));
+			//System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
 			
 			if(budget>0) {
 				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
