@@ -71,35 +71,27 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         System.out.println("Utenti : "+client_list);
         
         
-        //Thread.sleep(5000);
+       
         //inizio estrazione
         Random rnd = new Random();
-        //rnd.nextInt(36)
-        int tmp = 15;
+        int tmp = rnd.nextInt(36);
         System.out.println("Estratto il numero : "+tmp);
         String pd = (tmp%2==0)?"par":"dis";
         String estr = Integer.toString(tmp);
-        //check_bet();
+
+        
         for(int i = 0; i<bet_map.size();i++) {
         	
             balance = 0;
             int reward = 0;
             int lost = 0;
             int bet = 0;
-                
      
             Boolean continua = true;
-            /*in certe estrazioni non viene assegnata la reward
-            do {
-            try {Boolean x = (obj_bet_map.get(i).contains(estr));
-            continua = true;
-            }catch(NullPointerException e) {
-            	continua = false;
-            	i++;
+
+            if((obj_bet_map.containsKey(i)==false)&&(bet_map.containsKey(i)==true)) {
+            	obj_bet_map.put(i, create_rnd());
             }
-            }while(continua == false);
-            */
-            
             
             try {Boolean x = (obj_bet_map.get(i).contains(estr));
             	continua = true;
@@ -117,16 +109,16 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                     bet = bet_map.get(i).get(ind);
                     reward = bet*2;
                     client_list.put(i, budget+(reward));
-                    System.err.println("giocatore "+i + " ha vinto : "+ (reward)+"|| turno "+turn);
+                    System.out.println("giocatore "+i + " ha vinto : "+ (reward)+"|| turno "+turn);
                 }
                 
             }
-            if((obj_bet_map.get(i).contains(pd))&&(!obj_bet_map.get(i).contains(0))) {
+            if((!obj_bet_map.get(i).contains("0"))&&(obj_bet_map.get(i).contains(pd))) {
                 budget = client_list.get(i);
                 bet = bet_map.get(i).get(0);
                 reward = bet*2;
                 client_list.put(i, budget+(reward));
-                System.err.println("giocatore "+i + " ha vinto : "+ (reward)+"|| turno "+turn);
+                System.out.println("giocatore "+i + " ha vinto : "+ (reward)+"|| turno "+turn);
                 
             }
             for(int j = 0; j<bet_map.get(i).size();j++) {
@@ -137,13 +129,14 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 
 
             balance = create_balance(reward, lost, bet);
-            System.out.println(i+" bilancio " +balance);
+            //System.out.println(i+" bilancio " +balance);
         
-            }/*provare a implementare funzioni tramite else
-            else System.err.println("Saltato indice : "+ i);*/
+            } else System.out.println("Saltato indice : "+ i);
+            /*provare a implementare funzioni tramite else
+            else System.out.println("Saltato indice : "+ i);*/
             
         }
-      //System.err.println("Riferimento ad "+i+" non trovato opp  "+obj_bet_map.get(i));
+      
         
         //fine estrazione
         System.out.println("Utenti budget aggiornato : "+client_list);
@@ -152,12 +145,11 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         c_s = (Client_Server_int) registry.lookup("CS");
         c_s.notify_client();
         }catch(NotBoundException e) {
-        	//turn_void++;
+
         	Thread.sleep(1000);
-        	//if (turn_void ==5) {System.err.println("Sistema chiuso");break;}
         }
 
-        System.err.println("-----------------------------------------");
+        System.out.println("-----------------------------------------");
     }while((!bet_map.isEmpty())&&(!obj_bet_map.isEmpty()));
         
         System.out.println("Server chiuso");
@@ -225,7 +217,14 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         client_list.put(id, budget);
     
     }
-
+    public static ArrayList<String> create_rnd(){
+    	ArrayList<String> n = new ArrayList<String>();
+    	Random rnd = new Random();
+        int tmp =  rnd.nextInt(36);
+        n.add(Integer.toString(tmp));
+        System.err.println("Inserito : "+n.get(0));
+    	return n;
+    }
 
 
 }
