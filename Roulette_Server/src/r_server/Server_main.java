@@ -49,23 +49,26 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         System.out.println("Nuovo giro di roulotte, turno : "+turn);
         //inizio accettazione scommesse
         System.out.println("Aste aperte, si accettano le puntate");
-        accesso = true;
+        
         
         try {
-            Thread.sleep(6000);
-        }
-        catch(InterruptedException e) {
-            
-        }
-        while((obj_bet_map.isEmpty())||(obj_bet_map.isEmpty())) {
-        	turn_void++;
-        	if(turn_void<6) {
         	System.out.println("In attesa di giocatori...");
-        	Thread.sleep(3000);
-        	}else {System.out.println("Chiusura sever, nessun giocatore presente");System.exit(1);;}
-        	}
+        	accesso = true;
+        	Thread.sleep(10000);
+        	accesso = false;
+        }
+        catch(InterruptedException e) {}
+        /*
+        if((obj_bet_map.isEmpty())||(bet_map.isEmpty())) {
+         	turn_void++;
+         	if(turn_void<6) {
+         	
+         	}else {System.out.println("Chiusura sever, nessun giocatore presente");System.exit(1);;}
+         	}
+       */
         //fine accettazione scommesse
-        accesso = false;
+        c_s = (Client_Server_int) registry.lookup("CS");
+        c_s.give_access();
         System.out.println("Aste chiuse, aspettare il prossimo turno");
         System.out.println("Valore puntate : " + bet_map);
         System.out.println("Numeri puntati : " +obj_bet_map);
@@ -89,10 +92,10 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
             int bet = 0;
      
             Boolean continua = true;
-
+            /*
             if((obj_bet_map.containsKey(i)==false)&&(bet_map.containsKey(i)==true)) {
             	obj_bet_map.put(i, create_rnd());
-            }
+            }*/
             
             try {Boolean x = (obj_bet_map.get(i).contains(estr));
             	continua = true;
@@ -138,19 +141,13 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
             
             
         }
-        try {
-            c_s = (Client_Server_int) registry.lookup("CS");
-            c_s.notify_client();
-            c_s.give_access();
-            }catch(NotBoundException e) {
-
-            	Thread.sleep(1000);
-            }
         
+       
         //fine estrazione
         System.out.println("Utenti budget aggiornato : "+client_list);
         System.out.println("-----------------------------------------");
-        
+        c_s.notify_client();
+        c_s.give_access();
        
         
     }while((!bet_map.isEmpty())&&(!obj_bet_map.isEmpty()));
@@ -219,7 +216,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
     public void update_budget(int id, int budget) throws RemoteException {
         client_list.put(id, budget);
     
-    }
+    }/*
     public static ArrayList<String> create_rnd(){
     	ArrayList<String> n = new ArrayList<String>();
     	Random rnd = new Random();
@@ -227,7 +224,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         n.add(Integer.toString(tmp));
         System.err.println("Inserito : "+n.get(0));
     	return n;
-    }
+    }*/
 
 	@Override
 	public HashMap<Integer, Integer> show_balance() throws RemoteException {

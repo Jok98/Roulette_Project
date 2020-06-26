@@ -21,7 +21,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	private static String host;
 	static Semaphore sem = new Semaphore(1);
 	private Semaphore semex = new Semaphore(1);
-	private Semaphore turn_sem = new Semaphore(1);
+	static Semaphore turn_sem = new Semaphore(1);
 	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
@@ -74,11 +74,8 @@ public class Client_thread extends Thread implements Client_Server_int {
 				}
 				
 				
-			}else {
-				break;
-			}
-			
-			
+			}else break;
+
 			synchronized(sem){
 				balance_list =s_c.show_balance();
 				System.out.println("Bilancio di "+id+" e : "+balance_list.get(id)+" al turno " +turn );
@@ -87,18 +84,12 @@ public class Client_thread extends Thread implements Client_Server_int {
 				}
 			}else {
 				System.out.println(id + " non partecipa al turno");
-				
-				{
-					
-					System.out.println("Aste chiuse, aspettare");
-					synchronized(turn_sem) {
-						while(s_c.access()==false);{
-					
-							turn_sem.wait();
-					}}
 				}
 				
-			}
+				synchronized(turn_sem){
+					System.out.println("Aste chiuse, aspettare");
+					turn_sem.wait();
+					}
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException e) {
 			
@@ -169,7 +160,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	}
 	@Override
 	public void notify_client() throws RemoteException {
-		synchronized(sem){sem.notify();}
+		synchronized(sem){sem.notifyAll();}
 	}
 	//da vedere se utilizzato
 	@Override
@@ -181,7 +172,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 
 	@Override
 	public void give_access() throws RemoteException {
-		synchronized(turn_sem){turn_sem.notify();}
+		synchronized(turn_sem){turn_sem.notifyAll();}
 		
 	}
 
