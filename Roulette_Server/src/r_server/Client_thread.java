@@ -16,7 +16,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	private int id;
 	private Server_Client_int s_c;
 	private int budget;
-	private int balance = 0;
+	private int old_budget ;
 	private static String host;
 	private String tmp;
 	static Semaphore sem = new Semaphore(1);
@@ -25,7 +25,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
 		this.budget = budget;
-		this.id = id;
+		this.id = id; 
 		
 	}
 	
@@ -37,7 +37,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 			Client_Server_int c_s = (Client_Server_int) UnicastRemoteObject.exportObject(th,1077);
 			registry.rebind("CS", c_s);
 			registry = LocateRegistry.getRegistry(host);
-			 s_c = (Server_Client_int)	registry.lookup("SC");
+			s_c = (Server_Client_int)	registry.lookup("SC");
 			Client_thread c_thread = new Client_thread(id,  host, budget);
 			s_c.set_user(id, budget);
 			
@@ -50,7 +50,9 @@ public class Client_thread extends Thread implements Client_Server_int {
 			}
 			ArrayList<Integer> bet_list = new ArrayList<Integer>();
 			ArrayList<String> obj_bet_list = new ArrayList<String>();
+			old_budget = budget;
 			budget = s_c.get_budget(id);
+			
 			System.out.println("Nuovo turno di : "+id);
 			System.out.println(id + " ha tot budget : "+budget);
 			if(budget>0) {
@@ -66,6 +68,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 					System.out.println("Lista obj puntate di "+ id + " "+obj_bet_list);
 					bet_list.clear();
 					obj_bet_list.clear();
+					budget = s_c.get_budget(id);
 					semex.release();
 				}
 				
@@ -73,17 +76,22 @@ public class Client_thread extends Thread implements Client_Server_int {
 			}else {
 				break;
 			}
-			this.balance = s_c.show_balance();
-			System.out.println(balance);
-			Thread.sleep(1000);
-			synchronized(sem){sem.wait();	}
+			
+			
+			synchronized(sem){
+				int balance =budget - old_budget;
+				System.err.println("Il bilancio di "+id+" è : "+balance);
+				sem.wait();	}
+			
+			
+			
 			System.out.println("---------------------------------------------");
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException e) {
 			
 			e.printStackTrace();
 		}
-	System.out.println("Giocatore "+id+"esce");
+	System.out.println("Giocatore "+id+" esce");
 	interrupt();
 	}
 	

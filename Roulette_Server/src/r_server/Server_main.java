@@ -16,7 +16,6 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 	static Boolean accesso;
 	static int turn;
 	static int balance;
-	//possibile causa errore
 	static int budget;
 	static Client_Server_int c_s;
 	static Semaphore sem = new Semaphore(1);
@@ -38,7 +37,8 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		
 		
 		do {
-		
+		bet_map.clear();
+		obj_bet_map.clear();
 		System.out.println("Nuovo giro di roulotte");
 		//inizio accettazione scommesse
 		System.out.println("Aste aperte, si accettano le puntate");
@@ -69,43 +69,46 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 		System.out.println("Estratto il numero : "+tmp);
 		String pd = (tmp%2==0)?"par":"disp";
 		String estr = Integer.toString(tmp);
-		for(int i = 0; i<obj_bet_map.size();i++) {
+		for(int i = 0; i<bet_map.size();i++) {
 			balance = 0;
 			int reward = 0;
 			int lost = 0;
 			int bet = 0;
-			try{
-				
 			
+
+				
+			//i= (bet_map.containsKey(i))? i:();
+			while(!(obj_bet_map.containsKey(i))||(obj_bet_map.containsKey(pd))) {
+				i++;
+				if(i>bet_map.size()) break; ;
+			}
+			//i= (bet_map.containsKey(i+1))? i:(i+1);
 			if((obj_bet_map.get(i).contains(estr))) {
 				budget = client_list.get(i);
 				bet = bet_map.get(i).indexOf(estr);
 				reward = bet*2;
 				client_list.put(i, budget+(reward));
-				System.out.println(i + " ha vinto : "+ (bet*2));
+				System.err.println(i + " ha vinto : "+ (bet*2));
 				
 			}
-			if((!obj_bet_map.get(i).contains(0))&&(obj_bet_map.get(i).contains(pd))) {
+			if((obj_bet_map.get(i).contains(pd))&(!obj_bet_map.get(i).contains(0))) {
 				budget = client_list.get(i);
 				bet = bet_map.get(i).get(0);
 				reward = bet*2;
 				client_list.put(i, budget+(reward));
-				System.out.println(i + " ha vinto : "+ (reward));
+				System.err.println(i + " ha vinto : "+ (reward));
 				
 			}
 			for(int j = 0; j<bet_map.get(i).size();j++) {
 				int x = bet_map.get(i).get(j);
-				System.out.println(x);
 				lost = lost + x;
 				
 			}
 			
 			balance = create_balance(reward, lost, bet);
 			System.out.println(i+" bilancio " +balance);
-			synchronized(sem){sem.wait();	}
-			}catch(NullPointerException | InterruptedException  e) {
-				//System.err.println("id : "+i+" non esistente");
-			}
+			
+			
 			
 		}
 		
@@ -119,16 +122,17 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 			e.printStackTrace();
 		}
 		c_s.notify_client();
-		bet_map.clear();
-		obj_bet_map.clear();
-		System.out.println("-----------------------------------------");
-	}while(true);
-		/*
+		//bet_map.clear();
+		//obj_bet_map.clear();
+		System.err.println("-----------------------------------------");
+	}while((!bet_map.isEmpty())&&(!obj_bet_map.isEmpty()));
+		
 		System.out.println("Server chiuso");
 		try {c_s.close_bet();
-		System.exit(1);
+		
 		}catch(UnmarshalException e) {}
-		*/
+		System.exit(1);
+		
 	}
 	
 	public static int create_balance(int reward, int lost, int bet) {
@@ -174,23 +178,9 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 	@Override
 	public void update_budget(int id, int budget) throws RemoteException {
 		client_list.put(id, budget);
-		
+	
 	}
 	
 
-	@Override
-	public int show_balance() throws RemoteException {
-		
-		return balance;
-		
-	}
-	
-	@Override
-	public void notify_server() throws RemoteException {
-		synchronized(sem){sem.notifyAll();}
-	}
-
-
-	
 
 }
