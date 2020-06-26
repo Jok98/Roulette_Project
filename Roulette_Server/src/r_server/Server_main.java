@@ -126,26 +126,21 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                 lost = lost + x;
                 
             }
-            coun_exit();
-           /* for(int y = 0; y<10;y++) {
-            	if(client_turn.get(y) >=5) {
-            		
-            	}
+            
 
-            }*/
             //visualizza su server
             balance = create_balance(reward, lost, bet);
             //invia a client
             balance_list.put(i,create_balance(reward, lost, bet)) ;
             System.out.println(i+" bilancio " +balance);
-            System.err.println(obj_bet_map.keySet().toString());
+           
             } //else {System.out.println("Saltato indice : "+ i);}
             
             
         }
         
-       
-        //fine estrazione
+        coun_exit();
+        System.err.println(client_turn);
         System.out.println("Utenti budget aggiornato : "+client_list);
         System.out.println("-----------------------------------------");
         c_s.notify_client();
@@ -169,13 +164,17 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
     }
     
     public static void coun_exit() {
-		String[] user = (String[]) obj_bet_map.keySet().toArray();
-		for(int i = 0; i<user.length;i++) {
-			if(!user[i].equals(i)) {
-				int  old_count = client_turn.get(i);
+    	int  old_count = 0;
+		for(int i = 0; i<10;i++) {
+			try {
+			if(!obj_bet_map.keySet().toArray()[i].equals(i)) {
+				old_count = client_turn.get(i);
 				client_turn.put(i, old_count+1);
+			}else {
+				old_count = client_turn.get(i);
+				if(old_count>0)client_turn.put(i, old_count-1);
 			}
-			
+			}catch(ArrayIndexOutOfBoundsException e ) {break;}
 		}	
     	
     }
@@ -257,9 +256,14 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 	
 		return turn;
 	}
-	
-	
-    
 
+	@Override
+	public Boolean user_exit(int id) throws RemoteException {
+		Boolean ex = false;
+    	if(client_turn.get(id) >=2) {
+    		ex=true;
+    	}
+		return ex;
+	}
 
 }

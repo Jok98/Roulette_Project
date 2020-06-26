@@ -16,5 +16,6 @@ public interface Server_Client_int extends Remote{
 	public HashMap<Integer, Integer> show_balance()throws RemoteException;
 	public HashMap<Integer,Integer> user_join()throws RemoteException;
 	public int get_turn()throws RemoteException;
+	public Boolean user_exit(int id)throws RemoteException;
 
 }

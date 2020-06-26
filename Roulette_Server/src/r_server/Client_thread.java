@@ -96,12 +96,15 @@ public class Client_thread extends Thread implements Client_Server_int {
 				System.out.println("Aste chiuse "+id +" deve aspettare");
 				turn_sem.wait();
 			}
-				
+			if(s_c.user_exit(id)==true) {
+				//System.err.println("Utente "+id+" e stato espulso");
+				interrupt();
+				}
 				
 	}
-	} catch (RemoteException | NotBoundException | InterruptedException e) {
-			
-			e.printStackTrace();
+	} catch (RemoteException | NotBoundException | InterruptedException  e) {
+		System.err.println("Giocatore "+id+" espulso per inattivita di 5 turni");
+			//e.printStackTrace();
 		}
 	System.err.println("Giocatore "+id+" esce");
 	interrupt();
