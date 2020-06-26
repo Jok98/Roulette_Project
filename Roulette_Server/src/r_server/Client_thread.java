@@ -81,7 +81,9 @@ public class Client_thread extends Thread implements Client_Server_int {
 			
 			synchronized(sem){
 				int balance =budget - old_budget;
-				System.out.println("Il bilancio di "+id+" è : "+balance);
+				//s_c.show_balance();
+				System.out.println("Bilancio generale : "+s_c.show_balance());
+				//System.out.println("Il bilancio di "+id+" è : "+balance);
 				sem.wait();
 				System.out.println("---------------------------------------------");}
 			

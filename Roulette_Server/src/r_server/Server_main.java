@@ -31,6 +31,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
     static HashMap<Integer,ArrayList<Integer>> bet_map = new HashMap<Integer,ArrayList<Integer>>();
     static HashMap<Integer,ArrayList<String>> obj_bet_map = new HashMap<Integer,ArrayList<String>>();
     static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
+    static HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
     public static void main (String[] args) throws RemoteException, NotBoundException, InterruptedException {
         
         registry= LocateRegistry.createRegistry(1099);
@@ -128,9 +129,9 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
                 
             }
 
-
             balance = create_balance(reward, lost, bet);
-            //System.out.println(i+" bilancio " +balance);
+            balance_list.put(i,create_balance(reward, lost, bet)) ;
+            System.out.println(i+" bilancio " +balance);
         
             } //else {System.out.println("Saltato indice : "+ i);}
             
@@ -225,6 +226,12 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         System.err.println("Inserito : "+n.get(0));
     	return n;
     }
+
+	@Override
+	public HashMap<Integer, Integer> show_balance() throws RemoteException {
+		
+		return balance_list;
+	}
     
 
 
