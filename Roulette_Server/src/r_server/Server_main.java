@@ -34,6 +34,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
     static HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
     static HashMap<Integer,Integer>client_turn = new HashMap<Integer,Integer>();
     static  int turn = 0;
+    static int exit =0;
     public static void main (String[] args) throws RemoteException, NotBoundException, InterruptedException {
         
     	for(int m = 0; m<10;m++) {client_turn.put(m, 0);}
@@ -146,8 +147,11 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         c_s.notify_client();
         c_s.give_access();
         coun_exit();
-        
-    }while((!bet_map.isEmpty())&&(!obj_bet_map.isEmpty()));
+        if(!bet_map.isEmpty()&&(!obj_bet_map.isEmpty())){
+        	exit++;
+        	if(exit==5) {break;}
+        }
+    }while(true);
         
         System.out.println("Server chiuso");
         try {c_s.close_bet();

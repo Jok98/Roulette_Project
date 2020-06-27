@@ -46,11 +46,11 @@ public class Client_thread extends Thread implements Client_Server_int {
 			s_c.set_user(id, budget);
 			
 			while(true) {
-			
+				sleep(1000);
 				turn = s_c.get_turn();
 				
 				Boolean join = rnd.nextBoolean();
-				if(join==true) {
+				if((join==true)&&(budget>0)) {
 
 			ArrayList<Integer> bet_list = new ArrayList<Integer>();
 			ArrayList<String> obj_bet_list = new ArrayList<String>();
@@ -59,7 +59,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 			System.out.println(id+" e stato accettato all asta "+ turn+ " : "+client_list.containsKey(id));
 			//System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
 			
-			if(budget>0) {
+			
 				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
 				tot_sem.acquire();
 				
@@ -78,8 +78,6 @@ public class Client_thread extends Thread implements Client_Server_int {
 					budget = s_c.get_budget(id);
 		
 				tot_sem.release();
-				
-			}else break;
 
 			synchronized(sem){
 				balance_list =s_c.show_balance();
@@ -97,7 +95,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 				//System.err.println("Utente "+id+" e stato espulso");
 				interrupt();
 				}
-			
+			sleep(1000);
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException  e) {
 		System.err.println("Giocatore "+id+" espulso per inattivita di 5 turni");
