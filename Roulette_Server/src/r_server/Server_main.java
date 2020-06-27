@@ -52,7 +52,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         bet_map.clear();
         Thread.sleep(100);
         
-        System.out.println("Nuovo giro di roulotte, turno : "+turn);
+        System.out.println("Nuovo giro di roulette, turno : "+turn);
         //inizio accettazione scommesse
         System.out.println("Aste aperte, si accettano le puntate");
        
@@ -140,7 +140,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         }
         
         coun_exit();
-        System.err.println(client_turn);
+        System.out.println(client_turn);
         System.out.println("Utenti budget aggiornato : "+client_list);
         System.out.println("-----------------------------------------");
         c_s.notify_client();
@@ -164,20 +164,23 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
     }
     
     public static void coun_exit() {
-    	int  old_count = 0;
-		for(int i = 0; i<10;i++) {
-			try {
-			if(!obj_bet_map.keySet().toArray()[i].equals(i)) {
-				old_count = client_turn.get(i);
-				client_turn.put(i, old_count+1);
-			}else {
-				old_count = client_turn.get(i);
-				if(old_count>0)client_turn.put(i, old_count-1);
-			}
-			}catch(ArrayIndexOutOfBoundsException e ) {break;}
-		}	
+    	ArrayList<Integer>z = new ArrayList<Integer>();
+    	z.addAll(obj_bet_map.keySet()); //01358
+    	for(int k=z.size(); k<10;k++){z.add(-1);}
+    	int[] not_bet = {0,1,2,3,4,5,6,7,8,9}; 	
+    	for(int i =0; i<10;i++) {if(z.contains(i)) not_bet[i]=-1;
+    	//System.err.println(not_bet[i]);
+    	}
+    	for(int j= 0; j<10;j++) {
+    		if(not_bet[j]!=-1) {
+    			int tmp = client_turn.get(j);
+    			client_turn.put(j, tmp+1);
+    		}else client_turn.put(j, 0);
+    	}
+    	}
     	
-    }
+    	
+
     
     @Override
     public synchronized void add_bet(Integer id, ArrayList<Integer> bet ) throws RemoteException {
