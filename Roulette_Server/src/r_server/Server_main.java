@@ -2,7 +2,6 @@ package r_server;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.UnmarshalException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -132,7 +131,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
             //invia al client bilancio
             balance_list.put(i,create_balance(reward, lost, bet)) ;
             System.out.println(i+" bilancio " +balance);
-           
+            
             }
  
         }
@@ -143,17 +142,10 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         c_s.notify_client();
         c_s.give_access();
         count_exit();
-        //se per 5 turni il server non riceve puntate viene chiuso
-        if(!bet_map.isEmpty()&&(!obj_bet_map.isEmpty())){
-        	exit++;
-        	if(exit==5) {break;}
-        }else exit=0;
-        
+               
     }while(true);
         
-        System.out.println("Server chiuso");
-        try {c_s.close_bet();}catch(UnmarshalException | NullPointerException e) {}
-        System.exit(1);
+
         
     }
     
