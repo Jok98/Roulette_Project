@@ -20,7 +20,7 @@ import java.util.concurrent.Semaphore;
  * - obj_bet_map : contiene come key l'ID del giocatore e come value i numeri su cui ha puntato (oppure pari o dispari)<br>
  * - client_list : contiene come key l'ID dei giocatori e come value il loro budget (che viene aggiornato ad ogni turno)<br>
  * - balance_list : contiene come key l'ID dei giocatori e come value il bilancio del singolo turno (composto da reward - lost + puntata vincente)<br>
- * La funzione principale della classe è contenuta all'interno del do-while. In questo ciclo ci sono delle fasi principali :<br>
+ * La funzione principale della classe Ã¨ contenuta all'interno del do-while. In questo ciclo ci sono delle fasi principali :<br>
  * - accettazione scommesse<br>
  * - blocco scommesse non valide<br>
  * - estrazione numero<br>
@@ -147,7 +147,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         if(!bet_map.isEmpty()&&(!obj_bet_map.isEmpty())){
         	exit++;
         	if(exit==5) {break;}
-        }
+        }else exit=0;
         
     }while(true);
         
