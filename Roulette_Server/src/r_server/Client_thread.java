@@ -20,8 +20,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	private int budget;
 	private static String host;
 	static Semaphore sem = new Semaphore(1);
-	private Semaphore semex = new Semaphore(1);
-	static Semaphore turn_sem = new Semaphore(1);
+	static Semaphore turn_sem = new Semaphore(9);
 	static Semaphore tot_sem = new Semaphore(1);
 	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
 	static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
@@ -63,8 +62,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 			if(budget>0) {
 				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
 				tot_sem.acquire();
-				synchronized(semex) {
-					semex.acquire();
+				
 					
 					do {
 					obj_bet(obj_bet_list);
@@ -78,9 +76,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 					bet_list.clear();
 					obj_bet_list.clear();
 					budget = s_c.get_budget(id);
-					semex.release();
-					
-				}
+		
 				tot_sem.release();
 				
 			}else break;
