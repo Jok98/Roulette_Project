@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 /**
- * Author @Matteo Moi @Alex Rabuffetti
+ * @Author Matteo Moi Alex Rabuffetti<br>
  *
  * Server_main e' la classe che si occupa di gestire l'evento della roulette (estrazione di un numero casuale,verifica e assegnazione delle vincite).<br>
  * La gestione delle puntate e dei giocatori vengono effettuate tramite le seguenti HashMap :<br>
@@ -62,18 +62,21 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         	obj_bet_map.clear();
         	bet_map.clear();
         	Thread.sleep(100);
-        
+        	
         	System.out.println("Nuovo giro di roulette, turno : "+turn);
         	System.out.println("Aste aperte, si accettano le puntate");
         	System.out.println("In attesa di giocatori...");
+        	//accettazione nuove puntate
         	accesso = true;
         	Thread.sleep(6000);
         	accesso = false;
+        	//stop nuove puntate
+        	
+        	//dati giocatore/puntate 
         	c_s = (Client_Server_int) registry.lookup("CS");
         	System.out.println("Aste chiuse, aspettare il prossimo turno");
         	System.out.println("Valore puntate : " + bet_map);
         	System.out.println("Numeri puntati : " +obj_bet_map);
-        	System.out.println("Utenti : "+client_list);
         	
         	//inizio estrazione
         	Random rnd = new Random();
@@ -97,9 +100,9 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
         			continua = false;
         		}
             
-            
+        		//verifica eventuali vincite
         		if(continua==true) {
-            
+        			
         			if((obj_bet_map.get(i).contains(estr))) {
         				budget = client_list.get(i);
         				int ind = obj_bet_map.get(i).indexOf(estr);
@@ -134,13 +137,13 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
  
         }
         
-        System.out.println(client_turn);
         System.out.println("Utenti budget aggiornato : "+client_list);
         System.out.println("-----------------------------------------");
+        
         c_s.notify_client();
         c_s.give_access();
         count_exit();
-        
+        //se per 5 turni il server non riceve puntate viene chiuso
         if(!bet_map.isEmpty()&&(!obj_bet_map.isEmpty())){
         	exit++;
         	if(exit==5) {break;}

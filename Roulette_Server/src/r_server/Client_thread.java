@@ -9,7 +9,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
-
+/**
+*
+* @author Matteo Moi  Alex Rabuffetti<br>
+*
+* Ad ogni thread è assegnato un budget fisso di 50 e un ID passati dal Client_main alla sua creazione.<br> 
+* Le funzioni principali della classe sono contenute all'interno del while. <br>
+* La prima fase prevede un controllo per permettere al giocatore di puntare (usando un random per partecipare o meno al turno in corso e controllando che il budget sia maggiore di zero).<br>
+* Nella seconda fase viene randomicamente scelto se l'utente punta su pari o dispari(singola puntata) o su numeri specifici (singola o multipla puntata)<br>
+* in seguito viene randomicamente stabilito il valore della scommessa (controllando che non sia maggiore del budget a disposizione).<br>
+* Nella terza fase tramite riferimento al server viene aggiornato il budget.<br>
+* Nella fase successiva il server notifica al client il suo bilancio del turno attuale (se ha partecipato).<br>
+* Se il giocatore non partecipa al turno viene mostrato a schermo un avviso.<br>
+* Indipendentemente dalla partecipazione al turno a fine ciclo il thread fa un controllo se il server è disponibile ad accettare nuove puntate o no(in quanto non ha ancora concluso il turno).<br>
+*
+*/
 public class Client_thread extends Thread implements Client_Server_int {
 	
 	private Random rnd = new Random();
@@ -45,11 +59,9 @@ public class Client_thread extends Thread implements Client_Server_int {
 			s_c.set_user(id, budget);
 			
 			while(true) {
-				//if(turn >= s_c.get_turn()) {sleep(1000);block++;while(block==)}
-				
+			
 				turn = s_c.get_turn();
-				
-				
+				//controllo accesso per puntare
 				if((rnd.nextBoolean())&&(budget>0)) {
 					n_bet = (budget<=5) ? budget : rnd.nextInt(5);
 
@@ -59,23 +71,25 @@ public class Client_thread extends Thread implements Client_Server_int {
 					client_list = s_c.user_join();
 					System.out.println(id+" e stato accettato all asta "+ turn+ " : "+client_list.containsKey(id));
 					//System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
-
+					
+					//creazione random puntata e valore puntata
 					tot_sem.acquire();
 					do {
 						obj_bet(obj_bet_list);
 						do_bet(bet_list);
 						while(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size()-1);}
 					}while(obj_bet_list.isEmpty()==true);
-					
+					//invio al server dei dati sulle puntate
 					s_c.set_obj_bet(id, obj_bet_list);
 					s_c.add_bet(id, bet_list);
 					System.out.println("Lista valori puntate di "+ id + " "+bet_list
 							+" || "+"Lista obj puntate di "+ id + " "+obj_bet_list);
 					bet_list.clear();
 					obj_bet_list.clear();
+					//aggiornamento budget giocatore
 					budget = s_c.get_budget(id);
 					tot_sem.release();
-
+					//ricezione del bilancio dell utente al turno n (se ha partecipato)
 					synchronized(sem){
 						balance_list =s_c.show_balance();
 						System.out.println("Bilancio di "+id+" e : "+balance_list.get(id)+" al turno " +turn );
@@ -84,7 +98,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 					}
 				}else {System.out.println(id + " non partecipa al turno "+ turn);
 				}
-				
+				//controllo se server accetta nuove puntate
 				synchronized(turn_sem){
 					if(s_c.access()==false) {
 						System.out.println("Aste chiuse "+id +" deve aspettare");

@@ -11,8 +11,6 @@ public class Client_main  {
 	static Client_thread th;
  protected Client_main() throws RemoteException {super();}
 
-static Registry registry;
-
 	public static void main (String[] args) throws RemoteException, NotBoundException, InterruptedException {
 		String host = (args.length < 1) ? null : args[0];
 		Client_thread th[] = new Client_thread[10];
