@@ -24,7 +24,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 	static Semaphore tot_sem = new Semaphore(1);
 	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
 	static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
-	
+	private int block=0;
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
 		this.budget = budget;
@@ -46,24 +46,22 @@ public class Client_thread extends Thread implements Client_Server_int {
 			s_c.set_user(id, budget);
 			
 			while(true) {
-				sleep(1000);
+				//if(turn >= s_c.get_turn()) {sleep(1000);block++;while(block==)}
+				
 				turn = s_c.get_turn();
 				
-				Boolean join = rnd.nextBoolean();
-				if((join==true)&&(budget>0)) {
-
-			ArrayList<Integer> bet_list = new ArrayList<Integer>();
-			ArrayList<String> obj_bet_list = new ArrayList<String>();
-			budget = s_c.get_budget(id);
-			client_list = s_c.user_join();
-			System.out.println(id+" e stato accettato all asta "+ turn+ " : "+client_list.containsKey(id));
-			//System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
-			
-			
-				n_bet = (budget<=5) ? budget : rnd.nextInt(5);
-				tot_sem.acquire();
 				
-					
+				if((rnd.nextBoolean())&&(budget>0)) {
+					n_bet = (budget<=5) ? budget : rnd.nextInt(5);
+
+					ArrayList<Integer> bet_list = new ArrayList<Integer>();
+					ArrayList<String> obj_bet_list = new ArrayList<String>();
+				budget = s_c.get_budget(id);
+				client_list = s_c.user_join();
+				System.out.println(id+" e stato accettato all asta "+ turn+ " : "+client_list.containsKey(id));
+				//System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
+
+				tot_sem.acquire();
 					do {
 					obj_bet(obj_bet_list);
 					do_bet(bet_list);
@@ -86,20 +84,21 @@ public class Client_thread extends Thread implements Client_Server_int {
 				System.out.println("---------------------------------------------");
 				}
 			}else {System.out.println(id + " non partecipa al turno "+ turn);}
-				
 			synchronized(turn_sem){
-				System.out.println("Aste chiuse "+id +" deve aspettare");
+				if(s_c.access()==false) {
+					System.out.println("Aste chiuse "+id +" deve aspettare");
+					sleep(3500);
+					}
 				turn_sem.wait();
-			}
+				}
 			if(s_c.user_exit(id)==true) {
-				//System.err.println("Utente "+id+" e stato espulso");
+				System.err.println("Giocatore "+id+" espulso per inattivita di 5 turni");
 				interrupt();
 				}
 			sleep(1000);
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException  e) {
-		System.err.println("Giocatore "+id+" espulso per inattivita di 5 turni");
-			//e.printStackTrace();
+		
 		}
 	System.err.println("Giocatore "+id+" esce");
 	interrupt();

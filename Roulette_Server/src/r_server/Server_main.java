@@ -59,7 +59,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
        
         System.out.println("In attesa di giocatori...");
         accesso = true;
-        Thread.sleep(10000);
+        Thread.sleep(6000);
         accesso = false;
 
         //fine accettazione scommesse
