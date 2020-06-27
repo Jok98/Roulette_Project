@@ -13,7 +13,7 @@ import java.util.concurrent.Semaphore;
 *
 * @author Matteo Moi  Alex Rabuffetti<br>
 *
-* Ad ogni thread è assegnato un budget fisso di 50 e un ID passati dal Client_main alla sua creazione.<br> 
+* Ad ogni thread Ã¨ assegnato un budget fisso di 50 e un ID passati dal Client_main alla sua creazione.<br> 
 * Le funzioni principali della classe sono contenute all'interno del while. <br>
 * La prima fase prevede un controllo per permettere al giocatore di puntare (usando un random per partecipare o meno al turno in corso e controllando che il budget sia maggiore di zero).<br>
 * Nella seconda fase viene randomicamente scelto se l'utente punta su pari o dispari(singola puntata) o su numeri specifici (singola o multipla puntata)<br>
@@ -21,7 +21,7 @@ import java.util.concurrent.Semaphore;
 * Nella terza fase tramite riferimento al server viene aggiornato il budget.<br>
 * Nella fase successiva il server notifica al client il suo bilancio del turno attuale (se ha partecipato).<br>
 * Se il giocatore non partecipa al turno viene mostrato a schermo un avviso.<br>
-* Indipendentemente dalla partecipazione al turno a fine ciclo il thread fa un controllo se il server è disponibile ad accettare nuove puntate o no(in quanto non ha ancora concluso il turno).<br>
+* Indipendentemente dalla partecipazione al turno a fine ciclo il thread fa un controllo se il server Ã¨ disponibile ad accettare nuove puntate o no(in quanto non ha ancora concluso il turno).<br>
 *
 */
 public class Client_thread extends Thread implements Client_Server_int {
@@ -169,12 +169,6 @@ public class Client_thread extends Thread implements Client_Server_int {
 	@Override
 	public void notify_client() throws RemoteException {
 		synchronized(sem){sem.notifyAll();}
-	}
-	
-	@Override
-	public void close_bet() throws RemoteException {
-		System.out.println("Server scommesse chiuso!");
-		System.exit(1);
 	}
 
 	@Override
