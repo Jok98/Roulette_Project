@@ -24,14 +24,13 @@ public class Client_thread extends Thread implements Client_Server_int {
 	static Semaphore tot_sem = new Semaphore(1);
 	private HashMap<Integer,Integer>balance_list = new HashMap<Integer,Integer>();
 	static HashMap<Integer,Integer>client_list = new HashMap<Integer,Integer>();
-	private int block=0;
+	
 	public Client_thread(int id, String host, int budget) {
 		this.host = host;
 		this.budget = budget;
 		this.id = id;
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
 	public synchronized void run() {
 		
 		try {
@@ -56,17 +55,18 @@ public class Client_thread extends Thread implements Client_Server_int {
 
 					ArrayList<Integer> bet_list = new ArrayList<Integer>();
 					ArrayList<String> obj_bet_list = new ArrayList<String>();
-				budget = s_c.get_budget(id);
-				client_list = s_c.user_join();
-				System.out.println(id+" e stato accettato all asta "+ turn+ " : "+client_list.containsKey(id));
-				//System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
+					budget = s_c.get_budget(id);
+					client_list = s_c.user_join();
+					System.out.println(id+" e stato accettato all asta "+ turn+ " : "+client_list.containsKey(id));
+					//System.out.println("Nuovo turno di : "+id+ " budget : "+budget);
 
-				tot_sem.acquire();
+					tot_sem.acquire();
 					do {
-					obj_bet(obj_bet_list);
-					do_bet(bet_list);
-					while(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size()-1);}
+						obj_bet(obj_bet_list);
+						do_bet(bet_list);
+						while(obj_bet_list.size()>bet_list.size()) {obj_bet_list.remove(obj_bet_list.size()-1);}
 					}while(obj_bet_list.isEmpty()==true);
+					
 					s_c.set_obj_bet(id, obj_bet_list);
 					s_c.add_bet(id, bet_list);
 					System.out.println("Lista valori puntate di "+ id + " "+bet_list
@@ -74,32 +74,33 @@ public class Client_thread extends Thread implements Client_Server_int {
 					bet_list.clear();
 					obj_bet_list.clear();
 					budget = s_c.get_budget(id);
-		
-				tot_sem.release();
+					tot_sem.release();
 
-			synchronized(sem){
-				balance_list =s_c.show_balance();
-				System.out.println("Bilancio di "+id+" e : "+balance_list.get(id)+" al turno " +turn );
-				sem.wait();
-				System.out.println("---------------------------------------------");
-				}
-			}else {System.out.println(id + " non partecipa al turno "+ turn);}
-			synchronized(turn_sem){
-				if(s_c.access()==false) {
-					System.out.println("Aste chiuse "+id +" deve aspettare");
-					sleep(3500);
+					synchronized(sem){
+						balance_list =s_c.show_balance();
+						System.out.println("Bilancio di "+id+" e : "+balance_list.get(id)+" al turno " +turn );
+						sem.wait();
+						System.out.println("---------------------------------------------");
 					}
-				turn_sem.wait();
+				}else {System.out.println(id + " non partecipa al turno "+ turn);
 				}
+				
+				synchronized(turn_sem){
+					if(s_c.access()==false) {
+						System.out.println("Aste chiuse "+id +" deve aspettare");
+						sleep(3500);
+					}
+					turn_sem.wait();
+				}
+				
 			if(s_c.user_exit(id)==true) {
 				System.err.println("Giocatore "+id+" espulso per inattivita di 5 turni");
 				interrupt();
-				}
+			}
 			sleep(1000);
 	}
-	} catch (RemoteException | NotBoundException | InterruptedException  e) {
-		
-		}
+			
+	} catch (RemoteException | NotBoundException | InterruptedException  e) {}
 	System.err.println("Giocatore "+id+" esce");
 	interrupt();
 	
@@ -112,26 +113,21 @@ public class Client_thread extends Thread implements Client_Server_int {
 		//System.out.println("Si scomette numeri : " + num);
 		int tmp;
 		String obj_bet = null;
-
-			if(num==true) {
-				
-				for(int i = 0; i<n_bet;i++) {
+		if(num==true) {	
+			for(int i = 0; i<n_bet;i++) {
 				do {
-				tmp = rnd.nextInt(36);
-				obj_bet =Integer.toString(tmp) ;
+					tmp = rnd.nextInt(36);
+					obj_bet =Integer.toString(tmp) ;
 				}while(obj_bet_list.contains(obj_bet));
 				obj_bet_list.add(obj_bet);
 				//System.out.println("Si scomette su : " + obj_bet );
 				}
-				
-				
-			}else {
-				n_bet=1;
-				obj_bet = (rnd.nextBoolean()==true) ? "par" :"dis";
-				obj_bet_list.add(obj_bet);
-				//System.out.println("Si scomette su : " + obj_bet );
+		}else {
+			n_bet=1;
+			obj_bet = (rnd.nextBoolean()==true) ? "par" :"dis";
+			obj_bet_list.add(obj_bet);
+			//System.out.println("Si scomette su : " + obj_bet );
 			}
-
 	}
 	
 	
@@ -152,27 +148,19 @@ public class Client_thread extends Thread implements Client_Server_int {
 				/*System.out.print("Scommessa : "+i+" effettuata !");
 				System.out.println(" valore : "+bet_val);*/
 				System.out.println(id + " non ha piu soldi ");
-				
 				break;
 			}
-			/*
-			System.out.println(" valore : "+bet_val);
-			System.out.println("Soldi rimanenti :  "+ budget);
-			*/
-			}
-		
-	
+		}
 	}
 	@Override
 	public void notify_client() throws RemoteException {
 		synchronized(sem){sem.notifyAll();}
 	}
-	//da vedere se utilizzato
+	
 	@Override
 	public void close_bet() throws RemoteException {
 		System.out.println("Server scommesse chiuso!");
 		System.exit(1);
-		
 	}
 
 	@Override
@@ -181,9 +169,5 @@ public class Client_thread extends Thread implements Client_Server_int {
 		
 	}
 
-
-
-	
-	
 	
 }
