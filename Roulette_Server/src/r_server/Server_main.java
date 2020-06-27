@@ -139,13 +139,13 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
             
         }
         
-        coun_exit();
+        
         System.out.println(client_turn);
         System.out.println("Utenti budget aggiornato : "+client_list);
         System.out.println("-----------------------------------------");
         c_s.notify_client();
         c_s.give_access();
-       
+        coun_exit();
         
     }while((!bet_map.isEmpty())&&(!obj_bet_map.isEmpty()));
         
@@ -263,7 +263,7 @@ public class Server_main extends UnicastRemoteObject  implements Server_Client_i
 	@Override
 	public Boolean user_exit(int id) throws RemoteException {
 		Boolean ex = false;
-    	if(client_turn.get(id) >=2) {
+    	if(client_turn.get(id) >=5) {
     		ex=true;
     	}
 		return ex;

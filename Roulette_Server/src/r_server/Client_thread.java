@@ -47,6 +47,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 			s_c.set_user(id, budget);
 			
 			while(true) {
+			
 				turn = s_c.get_turn();
 				
 				Boolean join = rnd.nextBoolean();
@@ -100,7 +101,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 				//System.err.println("Utente "+id+" e stato espulso");
 				interrupt();
 				}
-				
+			
 	}
 	} catch (RemoteException | NotBoundException | InterruptedException  e) {
 		System.err.println("Giocatore "+id+" espulso per inattivita di 5 turni");
@@ -108,7 +109,7 @@ public class Client_thread extends Thread implements Client_Server_int {
 		}
 	System.err.println("Giocatore "+id+" esce");
 	interrupt();
-
+	
 	}
 	
 	
